@@ -26,6 +26,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "O EXTREME EMULATOR precisa acessar suas fotos para salvar os HUDs gerados.",
+          "savePhotosPermission": "O EXTREME EMULATOR precisa salvar os HUDs gerados na sua galeria."
+        }
+      ]
+    ]
   }
 }

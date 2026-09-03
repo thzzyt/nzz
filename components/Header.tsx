@@ -3,31 +3,56 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AccountSheet from './AccountSheet';
+import DiamondDotsIcon from './DiamondDotsIcon';
 import { theme } from '../theme';
+
+type OverlayRightButton = {
+  icon: keyof typeof Ionicons.glyphMap;
+  onPress?: () => void;
+};
 
 type Props = {
   activeIndex: number;
+  subTabIndex: number;
+  onSubTabChange: (index: number) => void;
+  overlayActive?: boolean;
+  overlayTitle?: string;
+  overlayBarColor?: string;
+  onOverlayBack?: () => void;
+  overlayRightButton?: OverlayRightButton;
 };
 
 const ENHANCE_TAB_INDEX = 2;
 export const HEADER_HEIGHT = 150;
+const OVERLAY_ROW_HEIGHT = 64;
 
-type SubTab = {
+export type SubTab = {
   key: string;
   icon: keyof typeof Ionicons.glyphMap;
 };
 
-const SUB_TABS: SubTab[] = [
+export const ENHANCE_SUB_TABS: SubTab[] = [
   { key: 'chat', icon: 'chatbubble' },
   { key: 'sparkles', icon: 'sparkles' },
   { key: 'diamond', icon: 'diamond' },
 ];
 
-export default function Header({ activeIndex }: Props) {
+export default function Header({
+  activeIndex,
+  subTabIndex,
+  onSubTabChange,
+  overlayActive = false,
+  overlayTitle = '',
+  overlayBarColor = 'transparent',
+  onOverlayBack,
+  overlayRightButton,
+}: Props) {
   const insets = useSafeAreaInsets();
-  const [subTabIndex, setSubTabIndex] = useState(SUB_TABS.length - 1);
   const isEnhance = activeIndex === ENHANCE_TAB_INDEX;
   const progress = useRef(new Animated.Value(0)).current;
+  const overlayProgress = useRef(new Animated.Value(0)).current;
+  const [accountSheetVisible, setAccountSheetVisible] = useState(false);
 
   useEffect(() => {
     Animated.timing(progress, {
@@ -37,24 +62,49 @@ export default function Header({ activeIndex }: Props) {
     }).start();
   }, [isEnhance]);
 
-  return (
-    <View style={[styles.wrapper, { height: HEADER_HEIGHT + insets.top }]} pointerEvents="box-none">
-      <LinearGradient
-        style={StyleSheet.absoluteFill}
-        colors={[theme.colors.accent, 'transparent']}
-        pointerEvents="none"
-      />
+  useEffect(() => {
+    Animated.timing(overlayProgress, {
+      toValue: overlayActive ? 1 : 0,
+      duration: 260,
+      useNativeDriver: true,
+    }).start();
+  }, [overlayActive]);
 
-      <View
+  return (
+    <View
+      style={[
+        styles.wrapper,
+        { height: overlayActive ? insets.top + OVERLAY_ROW_HEIGHT : HEADER_HEIGHT + insets.top },
+      ]}
+      pointerEvents="box-none"
+    >
+      <Animated.View
+        style={[StyleSheet.absoluteFill, { opacity: Animated.subtract(1, overlayProgress) }]}
+        pointerEvents="none"
+      >
+        <LinearGradient
+          style={StyleSheet.absoluteFill}
+          colors={[theme.colors.accent, 'transparent']}
+          pointerEvents="none"
+        />
+      </Animated.View>
+
+      <Animated.View
         style={[
           styles.topRow,
           { marginTop: insets.top + 6 },
           isEnhance && styles.topRowCentered,
+          { opacity: Animated.subtract(1, overlayProgress) },
         ]}
+        pointerEvents={overlayActive ? 'none' : 'box-none'}
       >
         {!isEnhance && (
           <>
-            <Pressable style={styles.dotsButton} hitSlop={8}>
+            <Pressable
+              style={styles.dotsButton}
+              onPress={() => setAccountSheetVisible(true)}
+              hitSlop={8}
+            >
               <Ionicons name="ellipsis-horizontal" size={26} color={theme.colors.text} />
             </Pressable>
             <View style={styles.centerLogoWrap} pointerEvents="none">
@@ -66,19 +116,26 @@ export default function Header({ activeIndex }: Props) {
         {isEnhance && (
           <Animated.View style={[styles.enhanceRow, { opacity: progress }]}>
             <View style={styles.m3Tabs}>
-              {SUB_TABS.map((tab, index) => {
+              {ENHANCE_SUB_TABS.map((tab, index) => {
                 const isActive = index === subTabIndex;
                 return (
                   <Pressable
                     key={tab.key}
                     style={styles.m3Tab}
-                    onPress={() => setSubTabIndex(index)}
+                    onPress={() => onSubTabChange(index)}
                   >
-                    <Ionicons
-                      name={isActive ? tab.icon : (`${tab.icon}-outline` as keyof typeof Ionicons.glyphMap)}
-                      size={28}
-                      color={isActive ? theme.colors.text : 'rgba(255,255,255,0.55)'}
-                    />
+                    {tab.key === 'diamond' ? (
+                      <DiamondDotsIcon
+                        size={24}
+                        color={isActive ? theme.colors.text : 'rgba(255,255,255,0.55)'}
+                      />
+                    ) : (
+                      <Ionicons
+                        name={isActive ? tab.icon : (`${tab.icon}-outline` as keyof typeof Ionicons.glyphMap)}
+                        size={28}
+                        color={isActive ? theme.colors.text : 'rgba(255,255,255,0.55)'}
+                      />
+                    )}
                     <View style={[styles.m3Indicator, isActive && styles.m3IndicatorActive]} />
                   </Pressable>
                 );
@@ -86,7 +143,35 @@ export default function Header({ activeIndex }: Props) {
             </View>
           </Animated.View>
         )}
-      </View>
+      </Animated.View>
+
+      <Animated.View
+        style={[
+          styles.overlayRow,
+          { paddingTop: insets.top + 6, backgroundColor: overlayBarColor },
+          { opacity: overlayProgress },
+        ]}
+        pointerEvents={overlayActive ? 'box-none' : 'none'}
+      >
+        <Pressable style={styles.overlayBackButton} onPress={onOverlayBack} hitSlop={8}>
+          <Ionicons name="arrow-back" size={22} color={theme.colors.text} />
+        </Pressable>
+        <Text style={styles.overlayTitle}>{overlayTitle}</Text>
+        {overlayRightButton && (
+          <Pressable
+            style={styles.overlayRightButton}
+            onPress={overlayRightButton.onPress}
+            hitSlop={8}
+          >
+            <Ionicons name={overlayRightButton.icon} size={20} color={theme.colors.text} />
+          </Pressable>
+        )}
+      </Animated.View>
+
+      <AccountSheet
+        visible={accountSheetVisible}
+        onClose={() => setAccountSheetVisible(false)}
+      />
     </View>
   );
 }
@@ -108,6 +193,44 @@ const styles = StyleSheet.create({
   },
   topRowCentered: {
     flex: 1,
+  },
+  overlayRow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingBottom: 14,
+  },
+  overlayBackButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlayTitle: {
+    flex: 1,
+    textAlign: 'center',
+    color: theme.colors.text,
+    fontSize: 15,
+    fontWeight: '800',
+    letterSpacing: 1,
+    marginHorizontal: 12,
+  },
+  overlayRightButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#2A2A2A',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dotsButton: {
     width: 52,

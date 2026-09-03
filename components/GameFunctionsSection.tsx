@@ -58,7 +58,12 @@ function useScreenRefreshRate(active: boolean) {
   return refreshRate;
 }
 
-export default function GameFunctionsSection() {
+type Props = {
+  dragShotMs: number | null;
+  onOpenDragShot: () => void;
+};
+
+export default function GameFunctionsSection({ dragShotMs, onOpenDragShot }: Props) {
   const [aimStabilizer, setAimStabilizer] = useState(false);
   const [fpsBooster, setFpsBooster] = useState(false);
   const refreshRate = useScreenRefreshRate(fpsBooster);
@@ -135,7 +140,9 @@ export default function GameFunctionsSection() {
         <View style={styles.rowText}>
           <Text style={styles.rowTitle}>Booster de drag-shot</Text>
           <Text style={styles.rowDescription}>
-            Defina a velocidade de arraste do seu botão de tiro.
+            {dragShotMs
+              ? `Velocidade calibrada: ${dragShotMs} ms`
+              : 'Defina a velocidade de arraste do seu botão de tiro.'}
           </Text>
         </View>
 
@@ -143,7 +150,7 @@ export default function GameFunctionsSection() {
           <View style={styles.dragIconBox}>
             <MaterialCommunityIcons name="gesture-tap-hold" size={26} color={theme.colors.text} />
           </View>
-          <Pressable style={styles.boostButton}>
+          <Pressable style={styles.boostButton} onPress={onOpenDragShot}>
             <Text style={styles.boostButtonText}>BOOST</Text>
           </Pressable>
         </View>

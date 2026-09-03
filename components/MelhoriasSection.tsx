@@ -1,9 +1,15 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { MouseItem } from '../screens/MouseScreen';
 import { theme } from '../theme';
 import RedShape from './RedShape';
 
-export default function MelhoriasSection() {
+type Props = {
+  selectedMouse: MouseItem | null;
+  onOpenMouseScreen: () => void;
+};
+
+export default function MelhoriasSection({ selectedMouse, onOpenMouseScreen }: Props) {
   return (
     <View style={styles.section}>
       <View style={styles.header}>
@@ -20,14 +26,24 @@ export default function MelhoriasSection() {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.dpiCard}>
-          <View style={styles.dpiIconBox}>
-            <MaterialCommunityIcons name="mouse-outline" size={48} color={theme.colors.text} />
+          <View style={[styles.dpiIconBox, selectedMouse && styles.dpiIconBoxSelected]}>
+            {selectedMouse ? (
+              <Image
+                source={{ uri: selectedMouse.img }}
+                style={styles.dpiImage}
+                resizeMode="contain"
+              />
+            ) : (
+              <MaterialCommunityIcons name="mouse-outline" size={48} color={theme.colors.text} />
+            )}
             <RedShape size={32} radius={0} style={styles.dpiBadge}>
               <MaterialCommunityIcons name="mouse" size={16} color={theme.colors.text} />
             </RedShape>
           </View>
-          <Text style={styles.dpiLabel}>DPI DO MOUSE</Text>
-          <Pressable style={styles.pillButton}>
+          <Text style={styles.dpiLabel}>
+            {selectedMouse ? `${selectedMouse.dpi} DPI` : 'DPI DO MOUSE'}
+          </Text>
+          <Pressable style={styles.pillButton} onPress={onOpenMouseScreen}>
             <Text style={styles.pillButtonText}>EMULAR</Text>
           </Pressable>
         </View>
@@ -73,7 +89,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 16,
+    marginBottom: 40,
     paddingHorizontal: 20,
   },
   title: {
@@ -102,17 +118,26 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dpiCard: {
-    width: 144,
+    width: 100,
     height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   dpiIconBox: {
-    width: 144,
+    aspectRatio: 2/3,
     flex: 1,
     borderRadius: CARD_RADIUS,
     backgroundColor: theme.colors.surface,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  dpiIconBoxSelected: {
+    backgroundColor: '#FFFFFF',
+  },
+  dpiImage: {
+    width: '50%',
+    height: '50%',
   },
   dpiBadge: {
     position: 'absolute',
@@ -131,6 +156,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   pillButton: {
+    width: '100%',
     height: 40,
     borderRadius: 20,
     backgroundColor: theme.colors.accent,
@@ -190,6 +216,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.accent,
   },
   calibrateButton: {
+    width: '100%',
     marginTop: 10,
   },
 });

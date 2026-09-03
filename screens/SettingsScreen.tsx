@@ -1,16 +1,12 @@
 import { ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import GameFunctionsSection from '../components/GameFunctionsSection';
-import GameVersionPicker from '../components/GameVersionPicker';
+import DeviceInfoSection from '../components/DeviceInfoSection';
 import { HEADER_HEIGHT } from '../components/Header';
+import PerformanceActionsSection from '../components/PerformanceActionsSection';
+import SmartOptimizationCard from '../components/SmartOptimizationCard';
 import { theme } from '../theme';
 
-type Props = {
-  dragShotMs: number | null;
-  onOpenDragShot: () => void;
-};
-
-export default function LibraryScreen({ dragShotMs, onOpenDragShot }: Props) {
+export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
 
   return (
@@ -19,9 +15,11 @@ export default function LibraryScreen({ dragShotMs, onOpenDragShot }: Props) {
       contentContainerStyle={{ paddingTop: HEADER_HEIGHT + insets.top + 24, paddingBottom: 120 }}
       showsVerticalScrollIndicator={false}
     >
-      <GameVersionPicker />
+      <SmartOptimizationCard />
 
-      <GameFunctionsSection dragShotMs={dragShotMs} onOpenDragShot={onOpenDragShot} />
+      <PerformanceActionsSection />
+
+      <DeviceInfoSection />
     </ScrollView>
   );
 }

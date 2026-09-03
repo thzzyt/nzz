@@ -5,13 +5,18 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
     "expo": "^54.0.37",
+    "expo-battery": "~10.0.8",
+    "expo-blur": "~15.0.8",
+    "expo-file-system": "~19.0.24",
     "expo-linear-gradient": "~15.0.8",
+    "expo-media-library": "~18.2.1",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-pager-view": "6.9.1",
-    "react-native-safe-area-context": "~5.6.0"
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-svg": "15.12.1"
   },
   "devDependencies": {
     "@types/react": "~19.1.10",

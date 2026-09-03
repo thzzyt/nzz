@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HEADER_HEIGHT } from '../components/Header';
 import MelhoriasSection from '../components/MelhoriasSection';
 import RedShape from '../components/RedShape';
+import { MouseItem } from './MouseScreen';
 import { theme } from '../theme';
 
 const USER_EMAIL = 'thzzdeveloper@gmail.com';
@@ -21,7 +22,12 @@ const FEATURES: FeatureCard[] = [
   { key: 'resolution', icon: 'albums-outline', label: 'Resolução\ndo celular' },
 ];
 
-export default function HomeScreen() {
+type Props = {
+  selectedMouse: MouseItem | null;
+  onOpenMouseScreen: () => void;
+};
+
+export default function HomeScreen({ selectedMouse, onOpenMouseScreen }: Props) {
   const insets = useSafeAreaInsets();
   const [floatingEnabled, setFloatingEnabled] = useState(true);
 
@@ -88,7 +94,7 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <MelhoriasSection />
+      <MelhoriasSection selectedMouse={selectedMouse} onOpenMouseScreen={onOpenMouseScreen} />
     </ScrollView>
   );
 }
@@ -148,13 +154,13 @@ const styles = StyleSheet.create({
   },
   floatingSection: {
     paddingHorizontal: 20,
-    marginTop: 32,
+    marginTop: 45,
   },
   floatingHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 16,
+    marginBottom: 25,
   },
   floatingTitle: {
     color: theme.colors.text,
