@@ -7,9 +7,16 @@ import RedShape from './RedShape';
 type Props = {
   selectedMouse: MouseItem | null;
   onOpenMouseScreen: () => void;
+  calibratorMs: number | null;
+  onOpenCalibrator: () => void;
 };
 
-export default function MelhoriasSection({ selectedMouse, onOpenMouseScreen }: Props) {
+export default function MelhoriasSection({
+  selectedMouse,
+  onOpenMouseScreen,
+  calibratorMs,
+  onOpenCalibrator,
+}: Props) {
   return (
     <View style={styles.section}>
       <View style={styles.header}>
@@ -63,13 +70,15 @@ export default function MelhoriasSection({ selectedMouse, onOpenMouseScreen }: P
 
         <View style={styles.calibratorCard}>
           <Text style={styles.cardTitle}>Calibrador</Text>
-          <Text style={styles.cardSubtitle}>Acelere o atraso do toque.</Text>
+          <Text style={styles.cardSubtitle}>
+            {calibratorMs ? `Toque calibrado: ${calibratorMs} ms` : 'Acelere o atraso do toque.'}
+          </Text>
           <View style={styles.blocksBox}>
             {[0, 1, 2, 3].map((i) => (
               <View key={i} style={styles.block} />
             ))}
           </View>
-          <Pressable style={[styles.pillButton, styles.calibrateButton]}>
+          <Pressable style={[styles.pillButton, styles.calibrateButton]} onPress={onOpenCalibrator}>
             <Text style={styles.pillButtonText}>CALIBRAR</Text>
           </Pressable>
         </View>

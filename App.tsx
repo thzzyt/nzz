@@ -6,6 +6,7 @@ import PagerView from 'react-native-pager-view';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import GlassTabBar, { TabItem } from './components/GlassTabBar';
 import Header, { ENHANCE_SUB_TABS } from './components/Header';
+import CalibratorScreen from './screens/CalibratorScreen';
 import DragShotScreen from './screens/DragShotScreen';
 import EnhanceScreen from './screens/EnhanceScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -67,10 +68,13 @@ export default function App() {
   const [mice, setMice] = useState<MouseItem[]>([]);
   const [miceLoading, setMiceLoading] = useState(false);
   const [selectedMouse, setSelectedMouse] = useState<MouseItem | null>(null);
+  const [calibratorVisible, setCalibratorVisible] = useState(false);
+  const [calibratorMs, setCalibratorMs] = useState<number | null>(null);
   const pagerRef = useRef<PagerView>(null);
 
   const dragShot = useFadeOverlay(dragShotVisible);
   const mouseOverlay = useFadeOverlay(mouseVisible);
+  const calibratorOverlay = useFadeOverlay(calibratorVisible);
 
   const goToPage = (index: number) => {
     pagerRef.current?.setPage(index);
@@ -92,11 +96,15 @@ export default function App() {
     ? 'ACELERADOR DE ARRASTE'
     : mouseVisible
       ? 'EMULADOR DE DPI DO MOUSE'
-      : '';
+      : calibratorVisible
+        ? 'CALIBRADOR DE TOQUE DA TELA'
+        : '';
 
   const onOverlayBack = dragShotVisible
     ? () => setDragShotVisible(false)
-    : () => setMouseVisible(false);
+    : mouseVisible
+      ? () => setMouseVisible(false)
+      : () => setCalibratorVisible(false);
 
   const overlayRightButton = dragShotVisible
     ? { icon: 'information-circle-outline' as const, onPress: () => setDragShotInfoVisible(true) }
@@ -121,6 +129,8 @@ export default function App() {
                   key={tab.key}
                   selectedMouse={selectedMouse}
                   onOpenMouseScreen={openMouseScreen}
+                  calibratorMs={calibratorMs}
+                  onOpenCalibrator={() => setCalibratorVisible(true)}
                 />
               );
             }
@@ -183,11 +193,26 @@ export default function App() {
           </Animated.View>
         )}
 
+        {calibratorOverlay.mounted && (
+          <Animated.View
+            style={[styles.overlay, { opacity: calibratorOverlay.fade }]}
+            pointerEvents={calibratorVisible ? 'auto' : 'none'}
+          >
+            <CalibratorScreen
+              onApply={(averageMs) => {
+                setCalibratorMs(averageMs);
+                setCalibratorVisible(false);
+              }}
+              onGoHome={() => goToPage(0)}
+            />
+          </Animated.View>
+        )}
+
         <Header
           activeIndex={activeIndex}
           subTabIndex={enhanceSubTab}
           onSubTabChange={setEnhanceSubTab}
-          overlayActive={dragShotVisible || mouseVisible}
+          overlayActive={dragShotVisible || mouseVisible || calibratorVisible}
           overlayTitle={overlayTitle}
           overlayBarColor={overlayBarColor}
           onOverlayBack={onOverlayBack}

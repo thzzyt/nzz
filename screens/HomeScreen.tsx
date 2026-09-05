@@ -25,9 +25,16 @@ const FEATURES: FeatureCard[] = [
 type Props = {
   selectedMouse: MouseItem | null;
   onOpenMouseScreen: () => void;
+  calibratorMs: number | null;
+  onOpenCalibrator: () => void;
 };
 
-export default function HomeScreen({ selectedMouse, onOpenMouseScreen }: Props) {
+export default function HomeScreen({
+  selectedMouse,
+  onOpenMouseScreen,
+  calibratorMs,
+  onOpenCalibrator,
+}: Props) {
   const insets = useSafeAreaInsets();
   const [floatingEnabled, setFloatingEnabled] = useState(true);
 
@@ -94,7 +101,12 @@ export default function HomeScreen({ selectedMouse, onOpenMouseScreen }: Props) 
         </View>
       </View>
 
-      <MelhoriasSection selectedMouse={selectedMouse} onOpenMouseScreen={onOpenMouseScreen} />
+      <MelhoriasSection
+        selectedMouse={selectedMouse}
+        onOpenMouseScreen={onOpenMouseScreen}
+        calibratorMs={calibratorMs}
+        onOpenCalibrator={onOpenCalibrator}
+      />
     </ScrollView>
   );
 }
