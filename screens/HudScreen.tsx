@@ -60,6 +60,7 @@ export default function HudScreen() {
   const [hudsData, setHudsData] = useState<HudsResponse | null>(null);
   const [activeHud, setActiveHud] = useState<HudItem | null>(null);
   const [saving, setSaving] = useState(false);
+  const [hudSaved, setHudSaved] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -87,6 +88,7 @@ export default function HudScreen() {
     animateNext();
     setPercent(0);
     setPhase('preparing');
+    setHudSaved(false);
 
     const list = selected ? hudsData?.[`${selected}dedos` as keyof HudsResponse] : undefined;
     const randomHud = list && list.length > 0 ? list[Math.floor(Math.random() * list.length)] : null;
@@ -140,6 +142,11 @@ export default function HudScreen() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const toggleHudSaved = () => {
+    animateNext();
+    setHudSaved((prev) => !prev);
   };
 
   return (
@@ -264,10 +271,26 @@ export default function HudScreen() {
               <Text style={styles.bottomButtonDisabledText}>GERANDO HUD...</Text>
             </View>
           ) : (
-            <Pressable style={styles.regenerateButton} onPress={resetToSelection}>
-              <Ionicons name="reload-outline" size={16} color={theme.colors.background} />
-              <Text style={styles.regenerateButtonText}>GERAR NOVAMENTE</Text>
-            </Pressable>
+            <>
+              <Pressable style={styles.regenerateButton} onPress={resetToSelection}>
+                <Ionicons name="reload-outline" size={16} color={theme.colors.background} />
+                <Text style={styles.regenerateButtonText}>GERAR NOVAMENTE</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.saveOutlineButton, hudSaved && styles.saveOutlineButtonActive]}
+                onPress={toggleHudSaved}
+              >
+                <Ionicons
+                  name={hudSaved ? 'bookmark' : 'bookmark-outline'}
+                  size={16}
+                  color={theme.colors.text}
+                />
+                <Text style={styles.saveOutlineButtonText}>
+                  {hudSaved ? 'HUD SALVO' : 'SALVAR HUD'}
+                </Text>
+              </Pressable>
+            </>
           )}
         </View>
       )}
@@ -406,7 +429,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
   },
   mediaOverlayContent: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
@@ -491,6 +514,27 @@ const styles = StyleSheet.create({
   },
   regenerateButtonText: {
     color: theme.colors.background,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  saveOutlineButton: {
+    marginTop: 12,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  saveOutlineButtonActive: {
+    backgroundColor: theme.colors.accent,
+    borderColor: theme.colors.accent,
+  },
+  saveOutlineButtonText: {
+    color: theme.colors.text,
     fontSize: 14,
     fontWeight: '800',
   },

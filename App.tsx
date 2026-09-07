@@ -5,7 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import PagerView from 'react-native-pager-view';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import GlassTabBar, { TabItem } from './components/GlassTabBar';
-import Header, { ENHANCE_SUB_TABS } from './components/Header';
+import Header, { ENHANCE_SUB_TABS, SavedTab } from './components/Header';
 import CalibratorScreen from './screens/CalibratorScreen';
 import DragShotScreen from './screens/DragShotScreen';
 import EnhanceScreen from './screens/EnhanceScreen';
@@ -61,6 +61,7 @@ function useFadeOverlay(visible: boolean) {
 export default function App() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [enhanceSubTab, setEnhanceSubTab] = useState(ENHANCE_SUB_TABS.length - 1);
+  const [savedTab, setSavedTab] = useState<SavedTab>('sensibilidades');
   const [dragShotVisible, setDragShotVisible] = useState(false);
   const [dragShotMs, setDragShotMs] = useState<number | null>(null);
   const [dragShotInfoVisible, setDragShotInfoVisible] = useState(false);
@@ -152,6 +153,7 @@ export default function App() {
                   key={tab.key}
                   activeSubTab={enhanceSubTab}
                   onSubTabChange={setEnhanceSubTab}
+                  savedTab={savedTab}
                 />
               );
             }
@@ -212,6 +214,8 @@ export default function App() {
           activeIndex={activeIndex}
           subTabIndex={enhanceSubTab}
           onSubTabChange={setEnhanceSubTab}
+          savedTab={savedTab}
+          onSavedTabChange={setSavedTab}
           overlayActive={dragShotVisible || mouseVisible || calibratorVisible}
           overlayTitle={overlayTitle}
           overlayBarColor={overlayBarColor}

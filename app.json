@@ -7,9 +7,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#0D0D0D",
-    "splash": {
-      "backgroundColor": "#0D0D0D"
-    },
     "ios": {
       "bundleIdentifier": "com.exemulator.pro",
       "supportsTablet": true
@@ -34,7 +31,9 @@
           "photosPermission": "O EXTREME EMULATOR precisa acessar suas fotos para salvar os HUDs gerados.",
           "savePhotosPermission": "O EXTREME EMULATOR precisa salvar os HUDs gerados na sua galeria."
         }
-      ]
+      ],
+      "expo-status-bar",
+      "expo-font"
     ]
   }
 }

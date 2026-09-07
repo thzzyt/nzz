@@ -1,22 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import { ENHANCE_SUB_TABS } from '../components/Header';
+import { ENHANCE_SUB_TABS, SALVOS_TAB_INDEX, SavedTab } from '../components/Header';
+import ChatScreen from './ChatScreen';
 import HudScreen from './HudScreen';
-import PlaceholderScreen from './PlaceholderScreen';
-
-const SUB_TAB_TITLES: Record<string, string> = {
-  chat: 'Chat',
-  sparkles: 'Enhance',
-  diamond: 'Premium',
-};
+import SavedItemsScreen from './SavedItemsScreen';
 
 type Props = {
   activeSubTab: number;
   onSubTabChange: (index: number) => void;
+  savedTab: SavedTab;
 };
 
-export default function EnhanceScreen({ activeSubTab, onSubTabChange }: Props) {
+export default function EnhanceScreen({ activeSubTab, onSubTabChange, savedTab }: Props) {
   const pagerRef = useRef<PagerView>(null);
 
   useEffect(() => {
@@ -30,13 +26,15 @@ export default function EnhanceScreen({ activeSubTab, onSubTabChange }: Props) {
       initialPage={activeSubTab}
       onPageSelected={(e) => onSubTabChange(e.nativeEvent.position)}
     >
-      {ENHANCE_SUB_TABS.map((tab) =>
-        tab.key === 'diamond' ? (
-          <HudScreen key={tab.key} />
-        ) : (
-          <PlaceholderScreen key={tab.key} title={SUB_TAB_TITLES[tab.key]} icon={tab.icon} />
-        )
-      )}
+      {ENHANCE_SUB_TABS.map((tab) => {
+        if (tab.key === 'chat') {
+          return (
+            <ChatScreen key={tab.key} onGoToSaved={() => onSubTabChange(SALVOS_TAB_INDEX)} />
+          );
+        }
+        if (tab.key === 'huds') return <HudScreen key={tab.key} />;
+        return <SavedItemsScreen key={tab.key} savedTab={savedTab} />;
+      })}
     </PagerView>
   );
 }

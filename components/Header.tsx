@@ -12,10 +12,14 @@ type OverlayRightButton = {
   onPress?: () => void;
 };
 
+export type SavedTab = 'sensibilidades' | 'huds';
+
 type Props = {
   activeIndex: number;
   subTabIndex: number;
   onSubTabChange: (index: number) => void;
+  savedTab?: SavedTab;
+  onSavedTabChange?: (tab: SavedTab) => void;
   overlayActive?: boolean;
   overlayTitle?: string;
   overlayBarColor?: string;
@@ -25,6 +29,7 @@ type Props = {
 
 const ENHANCE_TAB_INDEX = 2;
 export const HEADER_HEIGHT = 150;
+export const SAVED_TABS_HEIGHT = 60;
 const OVERLAY_ROW_HEIGHT = 64;
 
 export type SubTab = {
@@ -34,14 +39,23 @@ export type SubTab = {
 
 export const ENHANCE_SUB_TABS: SubTab[] = [
   { key: 'chat', icon: 'chatbubble' },
-  { key: 'sparkles', icon: 'sparkles' },
-  { key: 'diamond', icon: 'diamond' },
+  { key: 'huds', icon: 'diamond' },
+  { key: 'salvos', icon: 'bookmark' },
+];
+
+export const SALVOS_TAB_INDEX = ENHANCE_SUB_TABS.findIndex((tab) => tab.key === 'salvos');
+
+export const SAVED_TABS: { key: SavedTab; label: string }[] = [
+  { key: 'sensibilidades', label: 'Sensibilidades' },
+  { key: 'huds', label: 'HUDs' },
 ];
 
 export default function Header({
   activeIndex,
   subTabIndex,
   onSubTabChange,
+  savedTab = 'sensibilidades',
+  onSavedTabChange,
   overlayActive = false,
   overlayTitle = '',
   overlayBarColor = 'transparent',
@@ -50,6 +64,7 @@ export default function Header({
 }: Props) {
   const insets = useSafeAreaInsets();
   const isEnhance = activeIndex === ENHANCE_TAB_INDEX;
+  const showSavedTabs = isEnhance && !overlayActive && subTabIndex === SALVOS_TAB_INDEX;
   const progress = useRef(new Animated.Value(0)).current;
   const overlayProgress = useRef(new Animated.Value(0)).current;
   const [accountSheetVisible, setAccountSheetVisible] = useState(false);
@@ -74,7 +89,11 @@ export default function Header({
     <View
       style={[
         styles.wrapper,
-        { height: overlayActive ? insets.top + OVERLAY_ROW_HEIGHT : HEADER_HEIGHT + insets.top },
+        {
+          height: overlayActive
+            ? insets.top + OVERLAY_ROW_HEIGHT
+            : HEADER_HEIGHT + insets.top + (showSavedTabs ? SAVED_TABS_HEIGHT : 0),
+        },
       ]}
       pointerEvents="box-none"
     >
@@ -124,7 +143,7 @@ export default function Header({
                     style={styles.m3Tab}
                     onPress={() => onSubTabChange(index)}
                   >
-                    {tab.key === 'diamond' ? (
+                    {tab.key === 'huds' ? (
                       <DiamondDotsIcon
                         size={24}
                         color={isActive ? theme.colors.text : 'rgba(255,255,255,0.55)'}
@@ -144,6 +163,26 @@ export default function Header({
           </Animated.View>
         )}
       </Animated.View>
+
+      {showSavedTabs && (
+        <View style={styles.savedTabsRow}>
+          {SAVED_TABS.map((tab) => {
+            const isActive = tab.key === savedTab;
+            return (
+              <Pressable
+                key={tab.key}
+                style={styles.savedTab}
+                onPress={() => onSavedTabChange?.(tab.key)}
+              >
+                <Text style={[styles.savedTabText, isActive && styles.savedTabTextActive]}>
+                  {tab.label}
+                </Text>
+                <View style={[styles.savedTabIndicator, isActive && styles.savedTabIndicatorActive]} />
+              </Pressable>
+            );
+          })}
+        </View>
+      )}
 
       <Animated.View
         style={[
@@ -278,5 +317,34 @@ const styles = StyleSheet.create({
   },
   m3IndicatorActive: {
     backgroundColor: theme.colors.text,
+  },
+  savedTabsRow: {
+    height: SAVED_TABS_HEIGHT,
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
+  },
+  savedTab: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  savedTabText: {
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  savedTabTextActive: {
+    color: theme.colors.text,
+  },
+  savedTabIndicator: {
+    height: 3,
+    width: '60%',
+    borderRadius: 1.5,
+    backgroundColor: 'transparent',
+  },
+  savedTabIndicatorActive: {
+    backgroundColor: theme.colors.accent,
   },
 });

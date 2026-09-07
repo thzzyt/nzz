@@ -166,7 +166,7 @@ export default function DragShotScreen({ infoVisible, onCloseInfo, onApply, onGo
 
       {infoVisible && (
         <Pressable
-          style={[styles.infoBackdrop, StyleSheet.absoluteFillObject]}
+          style={[styles.infoBackdrop, StyleSheet.absoluteFill]}
           onPress={onCloseInfo}
         >
           <Pressable style={styles.infoCard} onPress={() => {}}>
@@ -187,7 +187,7 @@ export default function DragShotScreen({ infoVisible, onCloseInfo, onApply, onGo
       )}
 
       {confirming && (
-        <View style={[styles.confirmBackdrop, StyleSheet.absoluteFillObject]}>
+        <View style={[styles.confirmBackdrop, StyleSheet.absoluteFill]}>
           <View style={styles.confirmCard}>
             <ActivityIndicator color={theme.colors.text} size="small" />
             <Text style={styles.confirmText}>Calibrando velocidade de arraste...</Text>

@@ -228,7 +228,7 @@ export default function CalibratorScreen({ onApply, onGoHome }: Props) {
       </View>
 
       {resultsVisible && (
-        <View style={[styles.resultsBackdrop, StyleSheet.absoluteFillObject]}>
+        <View style={[styles.resultsBackdrop, StyleSheet.absoluteFill]}>
           <View style={styles.resultsCard}>
             <RedShape size={56} radius={28}>
               <Ionicons name="checkmark" size={26} color={theme.colors.text} />
@@ -281,7 +281,7 @@ export default function CalibratorScreen({ onApply, onGoHome }: Props) {
       )}
 
       {confirming && (
-        <View style={[styles.confirmBackdrop, StyleSheet.absoluteFillObject]}>
+        <View style={[styles.confirmBackdrop, StyleSheet.absoluteFill]}>
           <View style={styles.confirmCard}>
             <ActivityIndicator color={theme.colors.text} size="small" />
             <Text style={styles.confirmText}>Calibrando toque da tela...</Text>
